@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+  "name": "Bookwin",
+  "version": "0.1.0",
+
+  "description": "Moves window tabs to a bookmarks folder.",
+
+  "icons": {
+    "48": "icons/bookwin-48.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.mozilla.org/*"],
+      "js": ["bookwin.js"]
+    }
+  ]
+}
