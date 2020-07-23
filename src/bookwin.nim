@@ -4,6 +4,7 @@ import jsffi
 
 var browser {.importc, nodecl.}: JsObject
 
+# TODO: icons in manifest.json
 
 browser.contextMenus.create(js{
   id: "move-to-bookmarks",

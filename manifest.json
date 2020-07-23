@@ -5,10 +5,6 @@
 
   "description": "Moves window tabs to a bookmarks folder.",
 
-  "icons": {
-    "48": "icons/bookwin-48.png"
-  },
-
   "permissions": [
     "bookmarks",
     "contextMenus",
