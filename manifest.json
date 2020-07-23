@@ -9,10 +9,13 @@
     "48": "icons/bookwin-48.png"
   },
 
-  "content_scripts": [
-    {
-      "matches": ["*://*.mozilla.org/*"],
-      "js": ["bookwin.js"]
-    }
-  ]
+  "permissions": [
+    "bookmarks",
+    "contextMenus",
+    "tabs"
+  ],
+
+  "background": {
+    "scripts": ["bookwin.js"]
+  }
 }

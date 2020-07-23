@@ -1,5 +1,20 @@
-# This is just an example to get you started. A typical binary package
-# uses this file as the main entry point of the application.
+{.expermiental: "codeReordering".}
 
-when isMainModule:
-  echo("Hello, World!")
+import jsffi
+
+var browser {.importc, nodecl.}: JsObject
+
+
+browser.contextMenus.create(js{
+  id: "move-to-bookmarks",
+  # TODO: browser.i18n.getMessage
+  title: "Archive all tabs",
+  contexts: ["tab"],
+  # TODO: icons
+})
+
+browser.menus.onClicked.addListener(proc(info, tab: JsObject) =
+  case info.menuItemId
+  of "move-to-bookmarks":
+    echo "clicked on move-to-bookmarks!"
+)
