@@ -1,5 +1,8 @@
 {.experimental: "codeReordering".}
+import jsffi
 include karax/prelude
+
+var browser {.importc, nodecl.}: JsObject
 
 setRenderer createDom
 
@@ -27,3 +30,16 @@ proc createDom(): VNode =
 proc toggle(row: var tabRow): proc() =
   return proc() =
     row.checked = not row.checked
+
+# TODO: how to check if browser.tabs is empty, to allow
+# rendering/testing outside Firefox addon?
+browser.tabs.query(js{
+  currentWindow: true.toJs,
+}).then(proc(tabs: JsObject) =
+  echo "MCDBG: tabs!2"
+  for i, x in tabs:
+    # echo $i
+    echo $x.title.to(cstring)
+).catch(proc() =
+  echo "MCDBG: error..."
+)
