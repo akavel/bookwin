@@ -1,6 +1,7 @@
 {.experimental: "codeReordering".}
 import jsffi
 import options
+import karax/vstyles
 include karax/prelude
 
 var browser {.importc, nodecl.}: JsObject
@@ -15,9 +16,18 @@ type tabRow = tuple
 var tabRows: seq[tabRow] = @[
   (title: "hello 1", checked: false, faviconUrl: ""),
   (title: "rather longer entry", checked: true, faviconUrl: ""),
+  (title: "super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super longer entry", checked: true, faviconUrl: ""),
 ]
 
+
 proc createDom(): VNode =
+  let
+    titleStyle = style(
+      (overflow, kstring"hidden"),
+      (textOverflow, kstring"ellipsis"),
+      (whiteSpace, kstring"nowrap"),
+      (width, kstring"500px"),
+    )
   buildHtml(tdiv):
     table:
       for i, row in tabRows.mpairs:
@@ -26,7 +36,8 @@ proc createDom(): VNode =
             if row.faviconUrl != "":
               img(src=row.faviconUrl, width="16", height="16")
           td:
-            text row.title
+            tdiv(style=titleStyle):
+              text row.title
           td:
             form:
               input(`type`="checkbox", checked=toChecked(row.checked), onchange=toggle(row))
