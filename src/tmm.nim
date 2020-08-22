@@ -1,5 +1,6 @@
 {.experimental: "codeReordering".}
 import jsffi
+import options
 include karax/prelude
 
 var browser {.importc, nodecl.}: JsObject
@@ -7,13 +8,13 @@ var browser {.importc, nodecl.}: JsObject
 setRenderer createDom
 
 type tabRow = tuple
-  # TODO: favicon
   title: string
   checked: bool
+  faviconUrl: string  # empty if none
 
 var tabRows: seq[tabRow] = @[
-  (title: "hello 1", checked: false),
-  (title: "rather longer entry", checked: true),
+  (title: "hello 1", checked: false, faviconUrl: ""),
+  (title: "rather longer entry", checked: true, faviconUrl: ""),
 ]
 
 proc createDom(): VNode =
@@ -21,6 +22,9 @@ proc createDom(): VNode =
     table:
       for i, row in tabRows.mpairs:
         tr:
+          td:
+            if row.faviconUrl != "":
+              img(src=row.faviconUrl, width="16", height="16")
           td:
             text row.title
           td:
@@ -36,12 +40,13 @@ proc toggle(row: var tabRow): proc() =
 browser.tabs.query(js{
   currentWindow: true.toJs,
 }).then(proc(tabs: JsObject) =
-  # echo "MCDBG: tabs!2"
   tabRows.setLen 0
-  for i, x in tabs:
-    # echo $i
-    # echo $x.title.to(cstring)
-    tabRows.add (title: $x.title.to(cstring), checked: false)
+  for x in tabs:
+    tabRows.add (
+      title: $x.title.to(cstring),
+      checked: false,
+      faviconUrl: if isnil x.favIconUrl: "" else: $x.favIconUrl.to(cstring),
+    )
   redraw()
 ).catch(proc() =
   echo "MCDBG: error..."
