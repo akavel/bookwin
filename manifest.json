@@ -1,0 +1,23 @@
+{
+  "manifest_version": 2,
+  "name": "Tab Manager Redux",
+  "version": "0.1.0",
+
+  "description": "Allows easy bulk-closing and -bookmarking of tabs",
+  "homepage_url": "https://github.com/akavel/tmm",
+
+  "icons": {},
+
+  "permissions": [
+    "bookmarks",
+    "contextMenus",
+    "tabs"
+  ],
+
+  "browser_action": {
+    "default_icon": "icons/tmm-32.png",
+    "default_title": "Tab Manager Redux",
+    "default_popup": "tmm.html"
+  }
+}
+
