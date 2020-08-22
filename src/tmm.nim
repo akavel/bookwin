@@ -36,10 +36,13 @@ proc toggle(row: var tabRow): proc() =
 browser.tabs.query(js{
   currentWindow: true.toJs,
 }).then(proc(tabs: JsObject) =
-  echo "MCDBG: tabs!2"
+  # echo "MCDBG: tabs!2"
+  tabRows.setLen 0
   for i, x in tabs:
     # echo $i
-    echo $x.title.to(cstring)
+    # echo $x.title.to(cstring)
+    tabRows.add (title: $x.title.to(cstring), checked: false)
+  redraw()
 ).catch(proc() =
   echo "MCDBG: error..."
 )
