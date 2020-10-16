@@ -52,6 +52,8 @@ var bookmarkFolders: seq[bookmarkFolder]
 #   (title: ". . fake-subfolder", id: "-3"),
 # ]
 
+var folderName: string
+
 proc createDom(): VNode =
   let
     formH = "5em"  # FIXME: make it work without fixed height...
@@ -96,7 +98,7 @@ proc createDom(): VNode =
           option(value=f.id):
             text f.title
       br()
-      input(`type`="text", style=style((width, kstring"500px")))
+      input(`type`="text", style=style((width, kstring"500px")), value=folderName, onblur=setFolderName)
       br()
       # FIXME: button(onclick=archivize):
       a(href="#", onclick=archivize):
@@ -105,6 +107,10 @@ proc createDom(): VNode =
 proc toggle(row: var tabRow): proc() =
   return proc() =
     row.checked = not row.checked
+
+proc setFolderName(evt: Event, tgt: VNode) =
+  folderName = $tgt.value
+  echo "V: " & $tgt.value
 
 proc archivize(evt: Event, tgt: VNode) =
   echo "Archivize!"
