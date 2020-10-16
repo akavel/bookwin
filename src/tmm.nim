@@ -5,7 +5,7 @@ import karax/vstyles
 include karax/prelude
 
 # TODO: render a list of all tabs in current window, with checkmarks
-# TODO: show full tab title on hover
+# TODO[LATER]: show full tab title on hover
 # TODO: render a dropdown with tree of bookmark folder names
 # TODO: render an input box for (optional) new folder name
 # TODO: render an [Archive] button
@@ -15,6 +15,10 @@ include karax/prelude
 #       [LATER] - refresh the dopdown & select the new bookmark folder in dropdown
 #       - add bookmarks in the selected folder for all selected tabs
 #       - close all selected tabs
+# TODO[LATER]: make table rows fixed-width
+# TODO[LATER]: highlight the row corresponding to currently active tab
+# TODO[LATER]: scroll down to center on the row corresponding to currently active tab
+# TODO[LATER]: make the dropdown+inputbox+button always visible at fixed position in the dialog (but not covering the tabs list)
 
 var browser {.importc, nodecl.}: JsObject
 
