@@ -15,7 +15,7 @@ include karax/prelude
 # TODO: after pressing [Archive]:
 #       (done: create new bookmark folder (if input box nonempty))
 #       - clear the input box
-#       [LATER] - refresh the dopdown & select the new bookmark folder in dropdown
+#       [LATER] - refresh the dropdown & select the new bookmark folder in dropdown
 #       - add bookmarks in the selected folder for all selected tabs
 #       - close all selected tabs
 # TODO[LATER]: make table rows fixed-width
@@ -153,6 +153,7 @@ browser.tabs.query(js{
 browser.bookmarks.getTree().then(proc(items: JsObject) =
   # var list: seq[string]
   # echo "getTree:"
+  bookmarkFolders.setLen 0
   proc extractFolders(node: JsObject, indent: Natural) =
     if node.url != nil: return  # we're only interested in folders
     # list.add "  ".repeat(indent) & $node.title.to(cstring)
