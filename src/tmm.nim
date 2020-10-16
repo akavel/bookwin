@@ -1,4 +1,5 @@
 {.experimental: "codeReordering".}
+import dom
 import jsffi
 import options
 import strutils
@@ -97,12 +98,17 @@ proc createDom(): VNode =
       br()
       input(`type`="text", style=style((width, kstring"500px")))
       br()
-      button:
+      # FIXME: button(onclick=archivize):
+      a(href="#", onclick=archivize):
         text "Archive"
 
 proc toggle(row: var tabRow): proc() =
   return proc() =
     row.checked = not row.checked
+
+proc archivize(evt: Event, tgt: VNode) =
+  echo "Archivize!"
+  # evt.stopPropagation()
 
 # TODO: how to check if browser.tabs is empty, to allow
 # rendering/testing outside Firefox addon?
