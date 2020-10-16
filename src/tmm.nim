@@ -4,8 +4,8 @@ import options
 import karax/vstyles
 include karax/prelude
 
-# TODO: render a list of all tabs in current window, with checkmarks
-# TODO[LATER]: show full tab title on hover
+# (done: render a list of all tabs in current window, with checkmarks)
+# (done: show full tab title on hover)
 # TODO[LATER]: clicking tab title should toggle the checkmark
 # TODO: render a dropdown with tree of bookmark folder names
 # TODO: render an input box for (optional) new folder name
@@ -21,6 +21,7 @@ include karax/prelude
 # TODO[LATER]: scroll down to center on the row corresponding to currently active tab
 # TODO[LATER]: make the dropdown+inputbox+button always visible at fixed position in the dialog (but not covering the tabs list)
 # TODO[LATER]: prettier vertical alignment of favicons and tab titles
+# TODO[LATER]: when hovering over tab title, show full tab title immediately in a tooltip
 
 var browser {.importc, nodecl.}: JsObject
 
@@ -62,7 +63,7 @@ proc createDom(): VNode =
             if row.faviconUrl != "":
               img(src=row.faviconUrl, width="16", height="16")
           td:
-            tdiv(style=titleStyle):
+            tdiv(style=titleStyle, title=row.title):
               text row.title
           td:
             form:
