@@ -108,14 +108,14 @@ proc toggle(row: var tabRow): proc() =
   return proc() =
     row.checked = not row.checked
 
-proc setFolderName(evt: Event, tgt: VNode) =
-  folderName = $tgt.value
-  echo "V: " & $tgt.value
+proc setFolderName(ev: Event, n: VNode) =
+  folderName = $n.value
+  echo "V: " & $n.value
 
-proc archivize(evt: Event, tgt: VNode) =
+proc archivize(ev: Event, n: VNode) =
   echo "Archivize!"
   # FIXME: folderName = "" -- doesn't seem to work; use getVNodeById(id) ?
-  # evt.stopPropagation()
+  # ev.stopPropagation()
 
 # TODO: how to check if browser.tabs is empty, to allow
 # rendering/testing outside Firefox addon?
