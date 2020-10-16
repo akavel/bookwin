@@ -86,6 +86,5 @@ browser.tabs.query(js{
       faviconUrl: if isnil x.favIconUrl: "" else: $x.favIconUrl.to(cstring),
     )
   redraw()
-).catch(proc() =
-  echo "MCDBG: error..."
 )
+# TODO: somehow add `.catch(...)` handler above
