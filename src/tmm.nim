@@ -38,6 +38,9 @@ var tabRows: seq[tabRow] = @[
 
 proc createDom(): VNode =
   let
+    tableStyle = style(
+      (margin, kstring"0 10px 0 0"),  # without this, Firefox adds ugly horizontal scrollbar in the addon window
+    )
     titleStyle = style(
       (overflow, kstring"hidden"),
       (textOverflow, kstring"ellipsis"),
@@ -47,7 +50,7 @@ proc createDom(): VNode =
       # (position, kstring"absolute"),
     )
   buildHtml(tdiv):
-    table:
+    table(style=tableStyle):
       for i, row in tabRows.mpairs:
         tr:
           td:
