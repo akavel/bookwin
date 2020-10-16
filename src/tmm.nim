@@ -4,6 +4,18 @@ import options
 import karax/vstyles
 include karax/prelude
 
+# TODO: render a list of all tabs in current window, with checkmarks
+# TODO: show full tab title on hover
+# TODO: render a dropdown with tree of bookmark folder names
+# TODO: render an input box for (optional) new folder name
+# TODO: render an [Archive] button
+# TODO: after pressing [Archive]:
+#       - create new bookmark folder (if input box nonempty)
+#       - clear the input box
+#       [LATER] - refresh the dopdown & select the new bookmark folder in dropdown
+#       - add bookmarks in the selected folder for all selected tabs
+#       - close all selected tabs
+
 var browser {.importc, nodecl.}: JsObject
 
 setRenderer createDom
