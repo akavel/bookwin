@@ -114,6 +114,7 @@ proc setFolderName(evt: Event, tgt: VNode) =
 
 proc archivize(evt: Event, tgt: VNode) =
   echo "Archivize!"
+  # FIXME: folderName = "" -- doesn't seem to work; use getVNodeById(id) ?
   # evt.stopPropagation()
 
 # TODO: how to check if browser.tabs is empty, to allow
