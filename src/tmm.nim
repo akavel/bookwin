@@ -7,7 +7,7 @@ include karax/prelude
 
 # (done: render a list of all tabs in current window, with checkmarks)
 # (done: show full tab title on hover)
-# TODO[LATER]: clicking tab title should toggle the checkmark
+# (done: clicking tab title should toggle the checkmark)
 # (done: render a dropdown with tree of bookmark folder names)
 # TODO: render an input box for (optional) new folder name
 # TODO: render an [Archive] button
@@ -83,7 +83,7 @@ proc createDom(): VNode =
           td:
             if row.faviconUrl != "":
               img(src=row.faviconUrl, width="16", height="16")
-          td:
+          td(onclick=toggle(row)):
             tdiv(style=titleStyle, title=row.title):
               text row.title
           td:
