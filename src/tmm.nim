@@ -129,5 +129,6 @@ browser.bookmarks.getTree().then(proc(items: JsObject) =
     for c in node.children:
       extractFolders(c, indent+1)
   extractFolders(items[0], 0)
+  redraw()
 )
 # TODO: somehow add `.catch(...)` handler above
