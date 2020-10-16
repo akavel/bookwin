@@ -39,6 +39,8 @@ proc createDom(): VNode =
       (textOverflow, kstring"ellipsis"),
       (whiteSpace, kstring"nowrap"),
       (width, kstring"500px"),
+      # (height, kstring"100%"),
+      # (position, kstring"absolute"),
     )
   buildHtml(tdiv):
     table:
