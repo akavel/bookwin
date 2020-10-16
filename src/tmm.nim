@@ -9,8 +9,8 @@ include karax/prelude
 # (done: show full tab title on hover)
 # (done: clicking tab title should toggle the checkmark)
 # (done: render a dropdown with tree of bookmark folder names)
-# TODO: render an input box for (optional) new folder name
-# TODO: render an [Archive] button
+# (done: render an input box for (optional) new folder name)
+# (done: render an [Archive] button)
 # TODO: after pressing [Archive]:
 #       - create new bookmark folder (if input box nonempty)
 #       - clear the input box
@@ -94,6 +94,11 @@ proc createDom(): VNode =
         for f in bookmarkFolders:
           option(value=f.id):
             text f.title
+      br()
+      input(`type`="text", style=style((width, kstring"500px")))
+      br()
+      button:
+        text "Archive"
 
 proc toggle(row: var tabRow): proc() =
   return proc() =
