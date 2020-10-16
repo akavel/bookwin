@@ -1,6 +1,7 @@
 {.experimental: "codeReordering".}
 import jsffi
 import options
+import strutils
 import karax/vstyles
 include karax/prelude
 
@@ -86,5 +87,19 @@ browser.tabs.query(js{
       faviconUrl: if isnil x.favIconUrl: "" else: $x.favIconUrl.to(cstring),
     )
   redraw()
+)
+# TODO: somehow add `.catch(...)` handler above
+
+# Collect full bookmark folders tree
+browser.bookmarks.getTree().then(proc(items: JsObject) =
+  var list: seq[string]
+  echo "getTree:"
+  proc extractFolders(node: JsObject, indent: Natural) =
+    if node.url != nil: return  # we're only interested in folders
+    list.add "  ".repeat(indent) & $node.title.to(cstring)
+    echo ">" & list[^1]
+    for c in node.children:
+      extractFolders(c, indent+1)
+  extractFolders(items[0], 0)
 )
 # TODO: somehow add `.catch(...)` handler above
