@@ -13,7 +13,7 @@ include karax/prelude
 # (done: render an input box for (optional) new folder name)
 # (done: render an [Archive] button)
 # TODO: after pressing [Archive]:
-#       - create new bookmark folder (if input box nonempty)
+#       (done: create new bookmark folder (if input box nonempty))
 #       - clear the input box
 #       [LATER] - refresh the dopdown & select the new bookmark folder in dropdown
 #       - add bookmarks in the selected folder for all selected tabs
@@ -52,7 +52,9 @@ var bookmarkFolders: seq[bookmarkFolder]
 #   (title: ". . fake-subfolder", id: "-3"),
 # ]
 
-var folderName: string
+var
+  folderName: string
+  parentFolderID: string
 
 proc createDom(): VNode =
   let
@@ -93,7 +95,7 @@ proc createDom(): VNode =
             form:
               input(`type`="checkbox", checked=toChecked(row.checked), onchange=toggle(row))
     form(style=formStyle):
-      select:
+      select(onchange=setParent):
         for f in bookmarkFolders:
           option(value=f.id):
             text f.title
@@ -108,12 +110,26 @@ proc toggle(row: var tabRow): proc() =
   return proc() =
     row.checked = not row.checked
 
+proc setParent(ev: Event, n: VNode) =
+  parentFolderID = $n.value
+  echo "SEL: " & $n.value
+
 proc setFolderName(ev: Event, n: VNode) =
   folderName = $n.value
   echo "V: " & $n.value
 
 proc archivize(ev: Event, n: VNode) =
   echo "Archivize!"
+  var parent = parentFolderID
+  if folderName != "":
+    browser.bookmarks.create(js{
+      parentId: parent.toJs,
+      title: folderName.toJs,
+    }).then(proc(b: JsObject) =
+      parent = $b.id.to(cstring)
+      echo "NEW: " & $b.id.to(cstring) & " " & $b.title.to(cstring)
+    )
+  echo "P: " & parent
   # FIXME: folderName = "" -- doesn't seem to work; use getVNodeById(id) ?
   # ev.stopPropagation()
 
