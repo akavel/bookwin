@@ -100,7 +100,7 @@ proc createDom(): VNode =
             form:
               input(`type`="checkbox", checked=toChecked(row.checked), onchange=toggle(row))
     form(style=formStyle):
-      select(onchange=setParent):
+      select(onchange=setParentFolder):
         for f in bookmarkFolders:
           option(value=f.id):
             text f.title
@@ -111,11 +111,15 @@ proc createDom(): VNode =
       a(href="#", onclick=archivize):
         text "Archive"
 
+# proc DBG[T](prefix: string, v: T): T =
+#   echo prefix & $v
+#   return v
+
 proc toggle(row: var tabRow): proc() =
   return proc() =
     row.checked = not row.checked
 
-proc setParent(ev: Event, n: VNode) =
+proc setParentFolder(ev: Event, n: VNode) =
   parentFolderID = $n.value
   echo "SEL: " & $n.value
 
