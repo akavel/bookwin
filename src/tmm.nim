@@ -1,6 +1,7 @@
 {.experimental: "codeReordering".}
 import dom
 import jsffi
+import asyncjs
 import options
 import strutils
 import karax/vstyles
@@ -122,16 +123,78 @@ proc setFolderName(ev: Event, n: VNode) =
 
 proc archivize(ev: Event, n: VNode) =
   echo "Archivize!"
-  var parent = parentFolderID
-  if folderName != "":
-    browser.bookmarks.create(js{
-      parentId: parent.toJs,
+
+  proc createBookmark(b: JsObject): Future[JsObject] {.async, importcpp: "browser.bookmarks.create(#)".}
+
+  proc foobar(): Future[JsObject] {.async.} =
+    let b = await createBookmark(js{
+      parentId: parentFolderID.toJs,
       title: folderName.toJs,
-    }).then(proc(b: JsObject) =
-      parent = $b.id.to(cstring)
-      echo "NEW: " & $b.id.to(cstring) & " " & $b.title.to(cstring)
-    )
-  echo "P: " & parent
+    })
+
+  # if folderName != "":
+  #   echo "P0: " & parentFolderID
+  #   let b = await createBookmark(js{
+  #     parentId: parentFolderID.toJs,
+  #     title: folderName.toJs,
+  #   })
+  #   echo "P1: " & $b.id.to[cstring]
+  # echo "xxx"
+
+  # var archive, rest: seq[tabRow]
+  # for t in tabRows:
+  #   if t.checked:
+  #     archive.add t
+  #   else:
+  #     rest.add t
+
+  # proc book(parent, title, url: string): Future[JsObject] {.async.} =
+  # proc addBookmarks(folder: JsObject): JsObject =
+  #   for t in archive:
+  #     f = f.then(proc(x: JsObject): JsObject =
+  #       return browser.bookmarks.create(js{
+  #         parentId: folder.id,
+  #         title: t.title.toJs,
+  #         url: t.url.toJs,
+  #       })
+  #     )
+
+  # let p =
+  #   if folderName != "":
+  #     browser.bookmarks.create(js{
+  #       parentId: parent.toJs,
+  #       title: folderName.toJs,
+  #     })
+  #   else:
+  #     browser.bookmarks.get(
+  #       parent.toJs
+  #     ).then(proc(list: JsObject) =
+
+  # echo "Archivize!"
+  # var parent = parentFolderID
+  # if folderName != "":
+  #   browser.bookmarks.create(js{
+  #     parentId: parent.toJs,
+  #     title: folderName.toJs,
+  #   }).then(proc(b: JsObject) =
+  #     parent = $b.id.to(cstring)
+  #     echo "NEW: " & $b.id.to(cstring) & " " & $b.title.to(cstring)
+  #   )
+  # echo "P: " & parent
+  # var rest: seq[tabRow]
+  # for t in tabRows:
+  #   if not t.checked:
+  #     rest.add t
+  #     continue
+  #   var ok = false
+  #   browser.bookmarks.create(js{
+  #     parentId: parent.toJs,
+  #     title: t.title.toJs,
+  #     url: t.url.toJs,
+  #   }).then(proc(b: JsObject) =
+  #     ok = true
+  #   })
+
   # FIXME: folderName = "" -- doesn't seem to work; use getVNodeById(id) ?
   # ev.stopPropagation()
 
