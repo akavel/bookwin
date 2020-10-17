@@ -140,7 +140,7 @@ proc archivize(ev: Event, n: VNode) =
       # let b2 = await createBookmark(js{})
     )
     return
-  archivizeIn(parentFolderID)
+  discard archivizeIn(parentFolderID)
 
   # proc createBookmark(b: JsObject): Future[JsObject] {.async, importcpp: "browser.bookmarks.create(#)".}
 
@@ -220,16 +220,16 @@ proc archivize(ev: Event, n: VNode) =
 proc archivizeIn(folderID: string) {.async.} =
   var rest: seq[tabRow]
   for t in tabRows:
-    if not t.clicked:
+    if not t.checked:
       rest.add t
       continue
     # TODO: handle exceptions
-    await createBookmark(js{
-      parentId: folderID,
+    discard await createBookmark(js{
+      parentId: folderID.toJs,
       title: t.title.toJs,
       url: t.url.toJs,
     })
-  tabRows = rest
+  # tabRows = rest
 
 
 # TODO: how to check if browser.tabs is empty, to allow
