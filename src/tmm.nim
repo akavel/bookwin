@@ -122,6 +122,7 @@ proc setFolderName(ev: Event, n: VNode) =
   echo "V: " & $n.value
 
 proc createBookmark(b: JsObject): Future[JsObject] {.async, importcpp: "browser.bookmarks.create(#)".}
+proc removeTab(ids: JsObject): Future[JsObject] {.async, importcpp: "browser.tabs.remove(#)".}
 
 proc archivize(ev: Event, n: VNode) =
   echo "Archivize!"
@@ -232,6 +233,7 @@ proc archivizeIn(folderID: string) {.async.} =
       title: t.title.toJs,
       url: t.url.toJs,
     })
+    discard await removeTab(t.id.toJs)
   echo "IN: ending..."
   # tabRows = rest
   echo "IN: end"
