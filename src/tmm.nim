@@ -21,12 +21,14 @@ include karax/prelude
 #       (done: close all selected tabs)
 # TODO[LATER]: make table rows fixed-width
 # TODO[LATER]: highlight the row corresponding to currently active tab
-# TODO[LATER]: scroll down to center on the row corresponding to currently active tab
+# TODO[LATER]: scroll down, centering on the row corresponding to currently active tab
 # (done: make the dropdown+inputbox+button always visible at fixed position in the dialog (but not covering the tabs list))
 # TODO[LATER]: prettier vertical alignment of favicons and tab titles
 # TODO[LATER]: when hovering over tab title, show full tab title immediately in a tooltip
 # (done: add [Close] button (closing checked tabs))
 # TODO[LATER]: add [Rename] button (renaming bookmark folder)
+# (done: double-click to browse to specified tab)
+# TODO[LATER] separate button [New] to create bookmarks subfolder, separate to [Archive]
 
 var browser {.importc, nodecl.}: JsObject
 
@@ -93,7 +95,7 @@ proc createDom(): VNode =
           td:
             if row.faviconUrl != "":
               img(src=row.faviconUrl, width="16", height="16")
-          td(onclick=toggle(row)):
+          td(onclick=toggle(row), ondblclick=activate(row)):
             tdiv(style=titleStyle, title=row.title):
               text row.title
           td:
@@ -120,6 +122,12 @@ proc createDom(): VNode =
 proc toggle(row: var tabRow): proc() =
   return proc() =
     row.checked = not row.checked
+
+proc activate(row: tabRow): proc() =
+  return proc() =
+    echo "ACT: " & row.title
+    browser.tabs.update(row.id.toJs, js{active: true.toJs})
+    # TODO: also, make it so that text will not become selected
 
 proc setParentFolder(ev: Event, n: VNode) =
   parentFolderID = $n.value
