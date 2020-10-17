@@ -33,16 +33,16 @@ var browser {.importc, nodecl.}: JsObject
 setRenderer createDom
 
 type tabRow = tuple
-  id: string
+  id: int
   url: string
   title: string
   checked: bool
   faviconUrl: string  # empty if none
 
 var tabRows: seq[tabRow] = @[
-  (id: "-1", url: "", title: "hello 1", checked: false, faviconUrl: ""),
-  (id: "-2", url: "", title: "rather longer entry", checked: true, faviconUrl: ""),
-  (id: "-3", url: "", title: "super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super longer entry", checked: true, faviconUrl: ""),
+  (id: -1, url: "", title: "hello 1", checked: false, faviconUrl: ""),
+  (id: -2, url: "", title: "rather longer entry", checked: true, faviconUrl: ""),
+  (id: -3, url: "", title: "super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super longer entry", checked: true, faviconUrl: ""),
 ]
 
 type bookmarkFolder = tuple
@@ -247,7 +247,7 @@ browser.tabs.query(js{
   tabRows.setLen 0
   for x in tabs:
     tabRows.add (
-      id: $x.id.to(cstring),
+      id: x.id.to(int),
       url: $x.url.to(cstring),
       title: $x.title.to(cstring),
       checked: false,
