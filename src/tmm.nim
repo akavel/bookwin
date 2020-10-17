@@ -25,6 +25,8 @@ include karax/prelude
 # (done: make the dropdown+inputbox+button always visible at fixed position in the dialog (but not covering the tabs list))
 # TODO[LATER]: prettier vertical alignment of favicons and tab titles
 # TODO[LATER]: when hovering over tab title, show full tab title immediately in a tooltip
+# TODO[LATER]: add [Close] button (closing checked tabs)
+# TODO[LATER]: add [Rename] button (renaming bookmark folder)
 
 var browser {.importc, nodecl.}: JsObject
 
