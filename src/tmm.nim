@@ -227,12 +227,13 @@ proc archivizeIn(folderID: string) {.async.} =
       rest.add t
       continue
     # TODO: handle exceptions
-    echo "IN: create..." & t.title
+    echo "IN: create..." & t.title & " (id=" & $t.id & ")"
     discard await createBookmark(js{
       parentId: folderID.toJs,
       title: t.title.toJs,
       url: t.url.toJs,
     })
+    echo "IN: close tab...: " & $t.id
     discard await removeTab(t.id.toJs)
   echo "IN: ending..."
   # tabRows = rest
