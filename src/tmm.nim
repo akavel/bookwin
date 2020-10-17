@@ -218,18 +218,23 @@ proc archivize(ev: Event, n: VNode) =
 
 # proc archivizeIn(folderID: string): Future[JsObject] {.async.} =
 proc archivizeIn(folderID: string) {.async.} =
+  echo "IN: start"
   var rest: seq[tabRow]
   for t in tabRows:
+    # echo "IN? " & t.title
     if not t.checked:
       rest.add t
       continue
     # TODO: handle exceptions
+    echo "IN: create..." & t.title
     discard await createBookmark(js{
       parentId: folderID.toJs,
       title: t.title.toJs,
       url: t.url.toJs,
     })
+  echo "IN: ending..."
   # tabRows = rest
+  echo "IN: end"
 
 
 # TODO: how to check if browser.tabs is empty, to allow
