@@ -121,16 +121,34 @@ proc setFolderName(ev: Event, n: VNode) =
   folderName = $n.value
   echo "V: " & $n.value
 
+proc createBookmark(b: JsObject): Future[JsObject] {.async, importcpp: "browser.bookmarks.create(#)".}
+
 proc archivize(ev: Event, n: VNode) =
   echo "Archivize!"
 
-  proc createBookmark(b: JsObject): Future[JsObject] {.async, importcpp: "browser.bookmarks.create(#)".}
+  # proc createBookmark(b: JsObject): Future[JsObject] {.async, importcpp: "browser.bookmarks.create(#)".}
 
-  proc foobar(): Future[JsObject] {.async.} =
-    let b = await createBookmark(js{
+  if folderName != "":
+    browser.bookmarks.create(js{
       parentId: parentFolderID.toJs,
       title: folderName.toJs,
-    })
+    # }).then(proc(b: JsObject): Future[JsObject] {.async.} =
+    }).then(proc(b: JsObject) {.async.} =
+      let parent = $b.id.to(cstring)
+      echo "NEW: " & $b.id.to(cstring) & " " & $b.title.to(cstring)
+      await archivizeIn(parent)
+      # let b2 = await createBookmark(js{})
+    )
+    return
+  archivizeIn(parentFolderID)
+
+  # proc createBookmark(b: JsObject): Future[JsObject] {.async, importcpp: "browser.bookmarks.create(#)".}
+
+  # proc foobar(): Future[JsObject] {.async.} =
+  #   let b = await createBookmark(js{
+  #     parentId: parentFolderID.toJs,
+  #     title: folderName.toJs,
+  #   })
 
   # if folderName != "":
   #   echo "P0: " & parentFolderID
@@ -198,6 +216,22 @@ proc archivize(ev: Event, n: VNode) =
   # FIXME: folderName = "" -- doesn't seem to work; use getVNodeById(id) ?
   # ev.stopPropagation()
 
+# proc archivizeIn(folderID: string): Future[JsObject] {.async.} =
+proc archivizeIn(folderID: string) {.async.} =
+  var rest: seq[tabRow]
+  for t in tabRows:
+    if not t.clicked:
+      rest.add t
+      continue
+    # TODO: handle exceptions
+    await createBookmark(js{
+      parentId: folderID,
+      title: t.title.toJs,
+      url: t.url.toJs,
+    })
+  tabRows = rest
+
+
 # TODO: how to check if browser.tabs is empty, to allow
 # rendering/testing outside Firefox addon?
 browser.tabs.query(js{
@@ -223,6 +257,7 @@ browser.bookmarks.getTree().then(proc(items: JsObject) =
   bookmarkFolders.setLen 0
   proc extractFolders(node: JsObject, indent: Natural) =
     if node.url != nil: return  # we're only interested in folders
+    # if node.unmodifiable != nil: return  # TODO: add or not?
     # list.add "  ".repeat(indent) & $node.title.to(cstring)
     bookmarkFolders.add (
       title: ". ".repeat(indent) & $node.title.to(cstring),
