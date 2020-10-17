@@ -238,7 +238,8 @@ proc archivizeIn(folderID: string) {.async.} =
     echo "IN: close tab...: " & $t.id
     discard await removeTab(t.id.toJs)
   echo "IN: ending..."
-  # tabRows = rest
+  tabRows = rest
+  redraw()
   echo "IN: end"
 
 
