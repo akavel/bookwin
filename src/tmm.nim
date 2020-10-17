@@ -17,8 +17,8 @@ include karax/prelude
 #       (done: create new bookmark folder (if input box nonempty))
 #       - clear the input box
 #       [LATER] - refresh the dropdown & select the new bookmark folder in dropdown
-#       - add bookmarks in the selected folder for all selected tabs
-#       - close all selected tabs
+#       (done: add bookmarks in the selected folder for all selected tabs)
+#       (done: close all selected tabs)
 # TODO[LATER]: make table rows fixed-width
 # TODO[LATER]: highlight the row corresponding to currently active tab
 # TODO[LATER]: scroll down to center on the row corresponding to currently active tab
