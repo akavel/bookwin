@@ -25,7 +25,7 @@ include karax/prelude
 # (done: make the dropdown+inputbox+button always visible at fixed position in the dialog (but not covering the tabs list))
 # TODO[LATER]: prettier vertical alignment of favicons and tab titles
 # TODO[LATER]: when hovering over tab title, show full tab title immediately in a tooltip
-# TODO[LATER]: add [Close] button (closing checked tabs)
+# (done: add [Close] button (closing checked tabs))
 # TODO[LATER]: add [Rename] button (renaming bookmark folder)
 
 var browser {.importc, nodecl.}: JsObject
@@ -110,6 +110,8 @@ proc createDom(): VNode =
       # FIXME: button(onclick=archivize):
       a(href="#", onclick=archivize):
         text "Archive"
+      a(href="#", onclick=closeTabs, style=style((marginLeft, kstring"10em"))):
+        text "Close"
 
 # proc DBG[T](prefix: string, v: T): T =
 #   echo prefix & $v
@@ -128,7 +130,7 @@ proc setFolderName(ev: Event, n: VNode) =
   echo "V: " & $n.value
 
 proc createBookmark(b: JsObject): Future[JsObject] {.async, importcpp: "browser.bookmarks.create(#)".}
-proc removeTab(ids: JsObject): Future[JsObject] {.async, importcpp: "browser.tabs.remove(#)".}
+proc removeTabs(ids: JsObject): Future[JsObject] {.async, importcpp: "browser.tabs.remove(#)".}
 
 proc archivize(ev: Event, n: VNode) =
   echo "Archivize!"
@@ -164,7 +166,7 @@ proc archivizeIn(folderID: string) {.async.} =
       url: t.url.toJs,
     })
     echo "IN: close tab...: " & $t.id
-    discard await removeTab(t.id.toJs)
+    discard await removeTabs(t.id.toJs)
   echo "IN: ending..."
   tabRows = rest
   redraw()
@@ -188,6 +190,20 @@ browser.tabs.query(js{
   redraw()
 )
 # TODO: somehow add `.catch(...)` handler above
+
+proc closeTabs() =
+  # FIXME: create helper proc addEventHandler taking async, or a macro simplifying below code
+  proc doCloseTabs() {.async.} =
+    var rest: seq[tabRow]
+    for t in tabRows:
+      if not t.checked:
+        rest.add t
+        continue
+      discard await removeTabs(t.id.toJs)
+    tabRows = rest
+    redraw()
+  discard doCloseTabs()
+
 
 # Collect full bookmark folders tree
 browser.bookmarks.getTree().then(proc(items: JsObject) =
