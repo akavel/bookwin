@@ -198,8 +198,7 @@ browser.tabs.query(js{
 # TODO: somehow add `.catch(...)` handler above
 
 proc closeTabs() =
-  # FIXME: create helper proc addEventHandler taking async, or a macro simplifying below code
-  proc doCloseTabs() {.async.} =
+  asyncBlock:
     var rest: seq[tabRow]
     for t in tabRows:
       if not t.checked:
@@ -208,7 +207,6 @@ proc closeTabs() =
       discard await removeTabs(t.id.toJs)
     tabRows = rest
     redraw()
-  discard doCloseTabs()
 
 
 # Collect full bookmark folders tree
@@ -230,3 +228,10 @@ browser.bookmarks.getTree().then(proc(items: JsObject) =
   redraw()
 )
 # TODO: somehow add `.catch(...)` handler above
+
+template asyncBlock(body: untyped) =
+  proc f() {.async, gensym.} =
+    body
+  # TODO: somehow add `.catch(...)` handler, forwarding the exception to Nim
+  discard f()
+
