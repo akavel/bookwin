@@ -139,7 +139,7 @@ proc setFolderName(ev: Event, n: VNode) =
   echo "V: " & $n.value
 
 proc archivize(ev: Event, n: VNode) =
-  asyncBlock:
+  soon:
     echo "Archivize!"
     var parent = parentFolderID
     if folderName != "":
@@ -196,7 +196,7 @@ browser.tabs.query(js{
 # TODO: somehow add `.catch(...)` handler above
 
 proc closeTabs() =
-  asyncBlock:
+  soon:
     var rest: seq[tabRow]
     for t in tabRows:
       if not t.checked:
@@ -208,7 +208,7 @@ proc closeTabs() =
 
 
 # Collect full bookmark folders tree
-asyncBlock:
+soon:
   let items = await getBookmarksTree()
   bookmarkFolders.setLen 0
   extractFolders(items[0])
@@ -223,7 +223,7 @@ proc extractFolders(node: JsObject, indent: Natural = 0) =
   for c in node.children:
     extractFolders(c, indent+1)
 
-template asyncBlock(body: untyped) =
+template soon(body: untyped) =
   proc f() {.async, gensym.} =
     body
   # TODO: somehow add `.catch(...)` handler, forwarding the exception to Nim
