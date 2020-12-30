@@ -1,4 +1,5 @@
 {.experimental: "codeReordering".}
+import webext
 import dom
 import jsffi
 import asyncjs
@@ -126,7 +127,7 @@ proc toggle(row: var tabRow): proc() =
 proc activate(row: tabRow): proc() =
   return proc() =
     echo "ACT: " & row.title
-    browser.tabs.update(row.id.toJs, js{active: true.toJs})
+    updateTab(row.id.toJs, js{active: true.toJs})
     # TODO: also, make it so that text will not become selected
 
 proc setParentFolder(ev: Event, n: VNode) =
@@ -136,9 +137,6 @@ proc setParentFolder(ev: Event, n: VNode) =
 proc setFolderName(ev: Event, n: VNode) =
   folderName = $n.value
   echo "V: " & $n.value
-
-proc createBookmark(b: JsObject): Future[JsObject] {.async, importcpp: "browser.bookmarks.create(#)".}
-proc removeTabs(ids: JsObject): Future[JsObject] {.async, importcpp: "browser.tabs.remove(#)".}
 
 proc archivize(ev: Event, n: VNode) =
   echo "Archivize!"
