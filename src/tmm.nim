@@ -6,6 +6,7 @@ import options
 import strutils
 import karax/vstyles
 include karax/prelude
+import karax_css
 
 # (done: render a list of all tabs in current window, with checkmarks)
 # (done: show full tab title on hover)
@@ -63,28 +64,28 @@ var
 
 proc createDom(): VNode =
   let
-    formH = "5em"  # FIXME: make it work without fixed height...
-    tableStyle = style(
-      # (width, kstring"550px"),
-      (margin, kstring"0 10px 0 0"),  # without this, Firefox adds ugly horizontal scrollbar in the addon window
-      (paddingBottom, kstring(formH)),
-    )
-    titleStyle = style(
-      (overflow, kstring"hidden"),
-      (textOverflow, kstring"ellipsis"),
-      (whiteSpace, kstring"nowrap"),
-      (width, kstring"500px"),
-      # (backgroundColor, kstring"#ffff88"),
-      # (height, kstring"100%"),
-      # (position, kstring"absolute"),
-    )
-    formStyle = style(
-      (position, kstring"fixed"),
-      (bottom, kstring"0"),
-      (height, kstring(formH)),
-      (width, kstring"100%"),
-      (background, kstring"#ffffff"),
-    )
+    formH = kstring"5em"  # FIXME: make it work without fixed height...
+    tableStyle = css{
+      # width: "550px",
+      margin: "0 10px 0 0",  # without this, Firefox adds ugly horizontal scrollbar in the addon window
+      padding_bottom: formH,
+    }
+    titleStyle = css{
+      overflow: "hidden",
+      text_overflow: "ellipsis",
+      white_space: "nowrap",
+      width: "500px",
+      # backgroundColor: "#ffff88",
+      # height: "100%",
+      # position: "absolute",
+    }
+    formStyle = css{
+      position: "fixed",
+      bottom: "0",
+      height: formH,
+      width: "100%",
+      background: "#ffffff",
+    }
   buildHtml(tdiv):
     # table(style=tableStyle, border="1", cellpadding="0", cellspacing="0"):
     table(style=tableStyle):
@@ -105,12 +106,12 @@ proc createDom(): VNode =
           option(value=f.id):
             text f.title
       br()
-      input(`type`="text", style=style((width, kstring"500px")), value=folderName, onblur=setFolderName)
+      input(`type`="text", style=css{width: "500px"}, value=folderName, onblur=setFolderName)
       br()
       # FIXME: button(onclick=archivize):
       a(href="#", onclick=archivize):
         text "Archive"
-      a(href="#", onclick=closeTabs, style=style((marginLeft, kstring"10em"))):
+      a(href="#", onclick=closeTabs, style=css{margin_left: "10em"}):
         text "Close"
 
 # proc DBG[T](prefix: string, v: T): T =
