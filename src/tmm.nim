@@ -139,19 +139,17 @@ proc setFolderName(ev: Event, n: VNode) =
   echo "V: " & $n.value
 
 proc archivize(ev: Event, n: VNode) =
-  echo "Archivize!"
-
-  if folderName != "":
-    browser.bookmarks.create(js{
-      parentId: parentFolderID.toJs,
-      title: folderName.toJs,
-    }).then(proc(b: JsObject) {.async.} =
-      let parent = $b.id.to(cstring)
+  asyncBlock:
+    echo "Archivize!"
+    var parent = parentFolderID
+    if folderName != "":
+      let b = await createBookmark(js{
+        parentId: parentFolderID.toJs,
+        title: folderName.toJs,
+      })
+      parent = $b.id.to(cstring)
       echo "NEW: " & $b.id.to(cstring) & " " & $b.title.to(cstring)
-      await archivizeIn(parent)
-    )
-    return
-  discard archivizeIn(parentFolderID)
+    await archivizeIn(parent)
 
   # FIXME: folderName = "" -- doesn't seem to work; use getVNodeById(id) ?
   # ev.stopPropagation()
@@ -210,24 +208,20 @@ proc closeTabs() =
 
 
 # Collect full bookmark folders tree
-browser.bookmarks.getTree().then(proc(items: JsObject) =
-  # var list: seq[string]
-  # echo "getTree:"
+asyncBlock:
+  let items = await getBookmarksTree()
   bookmarkFolders.setLen 0
-  proc extractFolders(node: JsObject, indent: Natural) =
-    if node.url != nil: return  # we're only interested in folders
-    # if node.unmodifiable != nil: return  # TODO: add or not?
-    # list.add "  ".repeat(indent) & $node.title.to(cstring)
-    bookmarkFolders.add (
-      title: ". ".repeat(indent) & $node.title.to(cstring),
-      id: $node.id.to(cstring))
-    # echo ">" & list[^1]
-    for c in node.children:
-      extractFolders(c, indent+1)
-  extractFolders(items[0], 0)
+  extractFolders(items[0])
   redraw()
-)
-# TODO: somehow add `.catch(...)` handler above
+
+proc extractFolders(node: JsObject, indent: Natural = 0) =
+  if node.url != nil: return # we're only interested in folders
+  # if node.unmodifiable != nil: return  # TODO: add or not?
+  bookmarkFolders.add (
+    title: ". ".repeat(indent) & $node.title.to(cstring),
+    id: $node.id.to(cstring))
+  for c in node.children:
+    extractFolders(c, indent+1)
 
 template asyncBlock(body: untyped) =
   proc f() {.async, gensym.} =
