@@ -175,11 +175,12 @@ proc archivize(ev: Event, n: VNode) =
   # ev.stopPropagation()
 
 
-# TODO: how to check if browser.tabs is empty, to allow
-# rendering/testing outside Firefox addon?
-browser.tabs.query(js{
-  currentWindow: true.toJs,
-}).then(proc(tabs: JsObject) =
+soon:
+  # TODO: how to check if browser.tabs is empty, to allow
+  # rendering/testing outside Firefox addon?
+  let tabs = await queryTabs(js{
+    currentWindow: true.toJs,
+  })
   tabRows.setLen 0
   for x in tabs:
     tabRows.add (
@@ -190,8 +191,6 @@ browser.tabs.query(js{
       faviconUrl: if isnil x.favIconUrl: "" else: $x.favIconUrl.to(cstring),
     )
   redraw()
-)
-# TODO: somehow add `.catch(...)` handler above
 
 proc closeTabs() =
   soon:
