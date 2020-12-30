@@ -15,45 +15,42 @@ template soon*(body: untyped) =
 
 type
   Browser* = ref BrowserObj
-  BrowserObj* {.importjs.} = object of RootObj  # TODO(akavel): do I need 'of RootObj'?
+  BrowserObj* {.importjs.} = object # TODO(akavel): do I need 'of RootObj'?
     bookmarks*: Bookmarks
     tabs*: Tabs
 
   Bookmarks* = ref BookmarksObj
-  BookmarksObj* {.importjs.} = object of RootObj
+  BookmarksObj* {.importjs.} = object
 
   Tabs* = ref TabsObj
-  TabsObj* {.importjs.} = object of RootObj
+  TabsObj* {.importjs.} = object
 
   BookmarkTreeNode* = ref BookmarkTreeNodeObj ## https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/bookmarks/BookmarkTreeNode
-  BookmarkTreeNodeObj* {.importjs.} = object of RootObj
+  BookmarkTreeNodeObj* {.importjs.} = object
     children*: seq[BookmarkTreeNode]
     id*: cstring
     title*: cstring
     url*: cstring
     # TODO: incomplete...
 
-  BookmarkCreateDetails* = ref BookmarkCreateDetailsObj ## https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/bookmarks/CreateDetails
-  BookmarkCreateDetailsObj* {.importjs.} = object of RootObj
+  BookmarkCreateDetails* = object ## https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/bookmarks/CreateDetails
     parentId*: cstring
     title*: cstring
     url*: cstring
     # TODO: incomplete...
 
   Tab* = ref TabObj
-  TabObj* {.importjs.} = object of RootObj
+  TabObj* {.importjs.} = object
     favIconUrl*: cstring
-    id*: ref int  # TODO(akavel): does 'ref' work correct here? is it needed?
+    id*: int  # TODO(akavel): how to mark that this can be null?
     title*: cstring
     url*: cstring
 
-  TabsQueryOpts* = ref TabsQueryOptsObj
-  TabsQueryOptsObj* {.importjs.} = object of RootObj
+  TabsQueryOpts* = object
     currentWindow*: bool
     # TODO: incomplete...
 
-  TabUpdateOpts* = ref TabUpdateOptsObj ## https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/update
-  TabUpdateOptsObj* {.importjs.} = object of RootObj
+  TabUpdateOpts* = object ## https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/update
     active*: bool  # `false` does nothing
     # TODO: incomplete...
 

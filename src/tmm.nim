@@ -179,7 +179,7 @@ soon:
   tabRows.setLen 0
   for x in tabs:
     tabRows.add (
-      id: x.id[],
+      id: x.id,
       url: $x.url,
       title: $x.title,
       checked: false,
