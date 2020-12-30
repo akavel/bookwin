@@ -45,7 +45,7 @@ type tabRow = tuple
 var tabRows: seq[tabRow] = @[
   (id: -1, url: "", title: "hello 1", checked: false, faviconUrl: ""),
   (id: -2, url: "", title: "rather longer entry", checked: true, faviconUrl: ""),
-  (id: -3, url: "", title: "super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super super longer entry", checked: true, faviconUrl: ""),
+  (id: -3, url: "", title: "super ".repeat(50) & "longer entry", checked: true, faviconUrl: ""),
 ]
 
 type bookmarkFolder = tuple
