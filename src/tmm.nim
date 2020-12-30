@@ -141,40 +141,38 @@ proc setFolderName(ev: Event, n: VNode) =
 proc archivize(ev: Event, n: VNode) =
   soon:
     echo "Archivize!"
-    var parent = parentFolderID
+    var folderID = parentFolderID
     if folderName != "":
       let b = await createBookmark(js{
         parentId: parentFolderID.toJs,
         title: folderName.toJs,
       })
-      parent = $b.id.to(cstring)
+      folderID = $b.id.to(cstring)
       echo "NEW: " & $b.id.to(cstring) & " " & $b.title.to(cstring)
-    await archivizeIn(parent)
+
+    echo "IN: start"
+    var rest: seq[tabRow]
+    for t in tabRows:
+      # echo "IN? " & t.title
+      if not t.checked:
+        rest.add t
+        continue
+      # TODO: handle exceptions
+      echo "IN: create..." & t.title & " (id=" & $t.id & ")"
+      discard await createBookmark(js{
+        parentId: folderID.toJs,
+        title: t.title.toJs,
+        url: t.url.toJs,
+      })
+      echo "IN: close tab...: " & $t.id
+      discard await removeTabs(t.id.toJs)
+    echo "IN: ending..."
+    tabRows = rest
+    redraw()
+    echo "IN: end"
 
   # FIXME: folderName = "" -- doesn't seem to work; use getVNodeById(id) ?
   # ev.stopPropagation()
-
-proc archivizeIn(folderID: string) {.async.} =
-  echo "IN: start"
-  var rest: seq[tabRow]
-  for t in tabRows:
-    # echo "IN? " & t.title
-    if not t.checked:
-      rest.add t
-      continue
-    # TODO: handle exceptions
-    echo "IN: create..." & t.title & " (id=" & $t.id & ")"
-    discard await createBookmark(js{
-      parentId: folderID.toJs,
-      title: t.title.toJs,
-      url: t.url.toJs,
-    })
-    echo "IN: close tab...: " & $t.id
-    discard await removeTabs(t.id.toJs)
-  echo "IN: ending..."
-  tabRows = rest
-  redraw()
-  echo "IN: end"
 
 
 # TODO: how to check if browser.tabs is empty, to allow
