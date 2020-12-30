@@ -94,12 +94,12 @@ proc createDom(): VNode =
           td:
             if row.faviconUrl != "":
               img(src=row.faviconUrl, width="16", height="16")
-          td(onclick=toggle(row), ondblclick=activate(row)):
+          td(onclick=toggle(row.id), ondblclick=activate(row)):
             tdiv(style=titleStyle, title=row.title):
               text row.title
           td:
             form:
-              input(`type`="checkbox", checked=toChecked(row.checked), onchange=toggle(row))
+              input(`type`="checkbox", checked=toChecked(row.checked), onchange=toggle(row.id))
     form(style=formStyle):
       select(onchange=setParentFolder):
         for f in bookmarkFolders:
@@ -118,9 +118,16 @@ proc createDom(): VNode =
 #   echo prefix & $v
 #   return v
 
-proc toggle(row: var tabRow): proc() =
+proc toggle(rowID: int): proc() =
   return proc() =
+    var row = addr findRow(rowID)
     row.checked = not row.checked
+
+proc findRow(id: int): var tabRow =
+  for row in tabRows.mitems:
+    if row.id == id:
+      return row
+  return new(tabRow)[]
 
 proc activate(row: tabRow): proc() =
   return proc() =
