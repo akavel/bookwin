@@ -1,7 +1,6 @@
 {.experimental: "codeReordering".}
 import webext
 import dom
-import jsffi
 import asyncjs
 import options
 import strutils
@@ -30,8 +29,6 @@ include karax/prelude
 # TODO[LATER]: add [Rename] button (renaming bookmark folder)
 # (done: double-click to browse to specified tab)
 # TODO[LATER] separate button [New] to create bookmarks subfolder, separate to [Archive]
-
-var browser {.importc, nodecl.}: JsObject
 
 # echo "in plug-in!"
 
@@ -127,7 +124,8 @@ proc toggle(row: var tabRow): proc() =
 proc activate(row: tabRow): proc() =
   return proc() =
     echo "ACT: " & row.title
-    updateTab(row.id.toJs, js{active: true.toJs})
+    discard browser.tabs.update(row.id, TabUpdateOpts(
+      active: true))
     # TODO: also, make it so that text will not become selected
 
 proc setParentFolder(ev: Event, n: VNode) =
@@ -143,12 +141,11 @@ proc archivize(ev: Event, n: VNode) =
     echo "Archivize!"
     var folderID = parentFolderID
     if folderName != "":
-      let b = await createBookmark(js{
-        parentId: parentFolderID.toJs,
-        title: folderName.toJs,
-      })
-      folderID = $b.id.to(cstring)
-      echo "NEW: " & $b.id.to(cstring) & " " & $b.title.to(cstring)
+      let b = await browser.bookmarks.create(BookmarkCreateDetails(
+        parentId: parentFolderID,
+        title: folderName))
+      folderID = $b.id
+      echo "NEW: " & $b.id & " " & $b.title
 
     echo "IN: start"
     var rest: seq[tabRow]
@@ -159,13 +156,12 @@ proc archivize(ev: Event, n: VNode) =
         continue
       # TODO: handle exceptions
       echo "IN: create..." & t.title & " (id=" & $t.id & ")"
-      discard await createBookmark(js{
-        parentId: folderID.toJs,
-        title: t.title.toJs,
-        url: t.url.toJs,
-      })
+      discard await browser.bookmarks.create(BookmarkCreateDetails(
+        parentId: folderID,
+        title: t.title,
+        url: t.url))
       echo "IN: close tab...: " & $t.id
-      discard await removeTabs(t.id.toJs)
+      await browser.tabs.remove(t.id)
     echo "IN: ending..."
     tabRows = rest
     redraw()
@@ -178,17 +174,16 @@ proc archivize(ev: Event, n: VNode) =
 soon:
   # TODO: how to check if browser.tabs is empty, to allow
   # rendering/testing outside Firefox addon?
-  let tabs = await queryTabs(js{
-    currentWindow: true.toJs,
-  })
+  let tabs = await browser.tabs.query(TabsQueryOpts(
+    currentWindow: true))
   tabRows.setLen 0
   for x in tabs:
     tabRows.add (
-      id: x.id.to(int),
-      url: $x.url.to(cstring),
-      title: $x.title.to(cstring),
+      id: x.id[],
+      url: $x.url,
+      title: $x.title,
       checked: false,
-      faviconUrl: if isnil x.favIconUrl: "" else: $x.favIconUrl.to(cstring),
+      faviconUrl: if isnil x.favIconUrl: "" else: $x.favIconUrl,
     )
   redraw()
 
@@ -199,30 +194,24 @@ proc closeTabs() =
       if not t.checked:
         rest.add t
         continue
-      discard await removeTabs(t.id.toJs)
+      await browser.tabs.remove(t.id)
     tabRows = rest
     redraw()
 
 
 # Collect full bookmark folders tree
 soon:
-  let items = await getBookmarksTree()
+  let items = await browser.bookmarks.getTree()
   bookmarkFolders.setLen 0
   extractFolders(items[0])
   redraw()
 
-proc extractFolders(node: JsObject, indent: Natural = 0) =
+proc extractFolders(node: BookmarkTreeNode, indent: Natural = 0) =
   if node.url != nil: return # we're only interested in folders
   # if node.unmodifiable != nil: return  # TODO: add or not?
   bookmarkFolders.add (
-    title: ". ".repeat(indent) & $node.title.to(cstring),
-    id: $node.id.to(cstring))
+    title: ". ".repeat(indent) & $node.title,
+    id: $node.id)
   for c in node.children:
     extractFolders(c, indent+1)
-
-template soon(body: untyped) =
-  proc f() {.async, gensym.} =
-    body
-  # TODO: somehow add `.catch(...)` handler, forwarding the exception to Nim
-  discard f()
 
