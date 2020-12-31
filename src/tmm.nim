@@ -21,7 +21,7 @@ import karax_css
 #       (done: add bookmarks in the selected folder for all selected tabs)
 #       (done: close all selected tabs)
 # TODO[LATER]: make table rows fixed-width
-# TODO[LATER]: highlight the row corresponding to currently active tab
+# (done: highlight the row corresponding to currently active tab)
 # TODO[LATER]: scroll down, centering on the row corresponding to currently active tab
 # (done: make the dropdown+inputbox+button always visible at fixed position in the dialog (but not covering the tabs list))
 # TODO[LATER]: prettier vertical alignment of favicons and tab titles
@@ -61,6 +61,7 @@ var bookmarkFolders: seq[bookmarkFolder]
 var
   folderName: string
   parentFolderID: string
+  activeTabID: int
 
 proc createDom(): VNode =
   let
@@ -70,7 +71,7 @@ proc createDom(): VNode =
       margin: "0 10px 0 0",  # without this, Firefox adds ugly horizontal scrollbar in the addon window
       padding_bottom: formH,
     }
-    titleStyle = css{
+    titleStyleNormal = css{
       overflow: "hidden",
       text_overflow: "ellipsis",
       white_space: "nowrap",
@@ -78,6 +79,10 @@ proc createDom(): VNode =
       # backgroundColor: "#ffff88",
       # height: "100%",
       # position: "absolute",
+    }
+    titleStyleBold = titleStyleNormal.merge css{
+      font_weight: "bold",
+      background: "#ffd",
     }
     formStyle = css{
       position: "fixed",
@@ -90,6 +95,9 @@ proc createDom(): VNode =
     # table(style=tableStyle, border="1", cellpadding="0", cellspacing="0"):
     table(style=tableStyle):
       for i, row in tabRows.mpairs:
+        let titleStyle =
+          if row.id == activeTabID: titleStyleBold
+          else: titleStyleNormal
         tr:
           td:
             if row.faviconUrl != "":
@@ -193,6 +201,9 @@ soon:
       checked: false,
       faviconUrl: if isnil x.favIconUrl: "" else: $x.favIconUrl,
     )
+    if x.highlighted:
+      echo "HIGH ", x.title
+      activeTabID = x.id
   redraw()
 
 proc closeTabs() =

@@ -42,6 +42,7 @@ type
   Tab* = ref TabObj
   TabObj* {.importjs.} = object
     favIconUrl*: cstring
+    highlighted*: bool
     id*: int  # TODO(akavel): how to mark that this can be null?
     title*: cstring
     url*: cstring
