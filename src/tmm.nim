@@ -22,7 +22,7 @@ import karax_css
 #       (done: close all selected tabs)
 # TODO[LATER]: make table rows fixed-width
 # (done: highlight the row corresponding to currently active tab)
-# TODO[LATER]: scroll down, centering on the row corresponding to currently active tab
+# (done: scroll down, centering on the row corresponding to currently active tab)
 # (done: make the dropdown+inputbox+button always visible at fixed position in the dialog (but not covering the tabs list))
 # TODO[LATER]: prettier vertical alignment of favicons and tab titles
 # TODO[LATER]: when hovering over tab title, show full tab title immediately in a tooltip
@@ -91,6 +91,8 @@ proc createDom(): VNode =
       width: "100%",
       background: "#ffffff",
     }
+  soon:
+    getElementById($activeTabID).scrollIntoView(`block`="center")
   buildHtml(tdiv):
     # table(style=tableStyle, border="1", cellpadding="0", cellspacing="0"):
     table(style=tableStyle):
@@ -98,7 +100,7 @@ proc createDom(): VNode =
         let titleStyle =
           if row.id == activeTabID: titleStyleBold
           else: titleStyleNormal
-        tr:
+        tr(id=kstring($row.id)):
           td:
             if row.faviconUrl != "":
               img(src=row.faviconUrl, width="16", height="16")
@@ -233,4 +235,7 @@ proc extractFolders(node: BookmarkTreeNode, indent: Natural = 0) =
     id: $node.id)
   for c in node.children:
     extractFolders(c, indent+1)
+
+proc scrollIntoView(n: Node, `block`: cstring = "start") {.
+  importcpp: "#.scrollIntoView({block: #})".}
 
