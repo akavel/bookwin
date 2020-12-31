@@ -62,6 +62,7 @@ var
   folderName: string
   parentFolderID: string
   activeTabID: int
+  shouldAutoScroll = false
 
 proc createDom(): VNode =
   let
@@ -92,7 +93,11 @@ proc createDom(): VNode =
       background: "#ffffff",
     }
   soon:
-    getElementById($activeTabID).scrollIntoView(`block`="center")
+    let el = getElementById($activeTabID)
+    if shouldAutoScroll and not isnil el:
+      shouldAutoScroll = false
+      el.scrollIntoView(`block`="center")
+
   buildHtml(tdiv):
     # table(style=tableStyle, border="1", cellpadding="0", cellspacing="0"):
     table(style=tableStyle):
@@ -206,6 +211,7 @@ soon:
     if x.highlighted:
       echo "HIGH ", x.title
       activeTabID = x.id
+  shouldAutoScroll = true
   redraw()
 
 proc closeTabs() =
